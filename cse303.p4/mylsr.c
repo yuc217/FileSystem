@@ -3,46 +3,88 @@
 #include <stdlib.h>
 #include <string.h>
 #include "support.h"
-
+#include <dirent.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 /*
  * mylsr() - produce the appropriate directory listing(s)
  */
 void mylsr(char **roots) {
     /* TODO: Complete this function */
-    struct dirent **namelist;
-    if(roots[0]==NULL){
-        int i,n;
-        n=scandir(".",&namelist,0,alphasort);
-        if(n<0){
-            perror("scandir");
-        } 
-        else{
-           for(i=0;i<n;i++){
-                printf("%s\n",namelist[i]->d_name); 
-                free(namelist[i]);
-            }
-        }
-        free(namelist);
-    } else {
-        int i=0;
-        while (roots[i]){
-        int c,n;
-        n = scandir(roots[i],&namelist,0,alphasort);
-        if(n<0){
-            printf("%s\n",roots[i]);
-        } else if(n==0){
-            printf("wrong");
-        } else {
-            for(int j=0;j<n;j++){
-                printf("%s\n",namelist[j]->d_name);
-                free(namelist[j]);
-            }
-        }
-        if(n>0)free(namelist);
-        i++;
-        }
-    
+  struct dirent **namelist;
+  if(roots[0]==NULL){
+    int i,n;
+    n = scandir(".",&namelist,0,alphasort);
+    if(n<0) perror("scandir error");
+    else {
+      for(i=0;i<n;i++){ // print everything first 
+	printf("%s\n",namelist[i]->d_name);
+      }
+      for(i=0;i<n;i++){ // find subdirectory and hard link
+	char * dirname = namelist[i]->d_name;
+	if(namelist[i]->d_type == DT_DIR){
+	  printf("Directory\n");
+	  struct stat fileStat;
+	  if(stat(dirname,&fileStat)<0){
+	    printf("error");
+	    exit(0);
+	  }
+	  if(fileStat.st_nlink > 2){
+	    // hard link
+	    printf("hard link\n");
+	  } else {
+	    char ** root = malloc(sizeof(char *));
+	    root[0]= malloc(strlen(dirname));
+	    strcpy(root[0],dirname);
+	    mylsr(root);
+	    free(root[0]);
+	    free(root);
+	  }
+	}
+	free(namelist[i]);
+      }
+      free(namelist);
     }
+  }
+  else{
+    int i=0;
+    while(roots[i]){
+      int c,n;
+      n = scandir(roots[i],&namelist,0,alphasort);
+      if(n<0) printf("%s\n",roots[i]);
+      else if(n==0) printf("wrong path");
+      else{
+	for(int j=0;j<n;j++){
+	  printf("%s\n",namelist[j]->d_name);
+	}
+	for(int j=0;j<n;j++){
+	  char *dirname = namelist[j]->d_name;
+	  if(namelist[j]->d_type == DT_DIR){
+	    struct stat fileStat;
+	    if(stat(dirname,&fileStat)<0){
+	      printf("error\n");
+	      exit(0);
+	    }
+	    if(fileStat.st_nlink>2){
+	      printf("hardlink\n"); // ignore
+	    } else {
+	      char ** root = malloc(sizeof(char *));
+	      root[0] = malloc(strlen(dirname));
+	      strcpy(root[0],dirname);
+	      mylsr(root);
+	      free(root[0]);
+	      free(root);
+	    }
+	  }
+	  free(namelist[j]);
+	 
+	}
+	free(namelist);
+      }
+      i++;
+    }
+  }
+  
 }
 
 /*
@@ -69,12 +111,28 @@ int main(int argc, char **argv) {
     /* parse the command-line options.  For this program, we only support  */
     /* the parameterless 'h' option, for getting help on program usage. */
     /* TODO: make sure to handle any other arguments specified by the assignment */
-    while ((opt = getopt(argc, argv, "h")) != -1) {
+    while ((opt = getopt(argc, argv, "hR")) != -1) {
         switch(opt) {
           case 'h': help(argv[0]); break;
         }
     }
 
     /* TODO: fix this invocation */
-    mylsr(NULL);
+    // mylsr(NULL);
+    char ** path = malloc((argc-1)*sizeof(char *));
+    int i = 2;
+    if(argc<2){
+      printf("wrong command\n");
+      exit(0);
+      }
+    for(;i<argc;i++){
+      path[i-2]=malloc(strlen(argv[i]));
+      strcpy(path[i-2],argv[i]);
+    }
+    mylsr(path);
+    for(i=0;i<argc-2;i++) free(path[i]);
+    free(path);
+    
+    
+    //    printf("%s\n",argv[1]);
 }
