@@ -1,27 +1,4 @@
 123number
-  // calloc two strings 
-/*  char * a = (char*)calloc(strlen(str1)+1,sizeof(char));
-  char * b = (char*)calloc(strlen(str2)+1,sizeof(char));
-  char * aa = a;
-  char * bb = b;
-  // to lower case that string
-  //if(str1[0]>='A'&&str1[0]<='Z'&& str2[0]>'Z') return 0;
-  while(*str1){
-    if(*str1=='.'){
-      str1++; continue;
-    }
-    *a = tolower(*str1);// tolowercase    
-    str1++;a++; // next char
-  }
-  // lowercase second string
-  while(*str2){
-   if(*str2=='.'){
-      str2++; continue;
-    }
-    *b = tolower(*str2);// tolowercase
-    str2++;b++; // next char
-  }  
-  (*a)=(*b)=0;  */
+ 
 
-  //  free(aa); // free allocated memory 
-//  free(bb);
+student

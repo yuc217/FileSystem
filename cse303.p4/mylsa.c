@@ -4,6 +4,23 @@
 #include <string.h>
 #include "support.h"
 #include <dirent.h>
+#include <errno.h>
+
+
+/**
+
+    test this one by 
+
+
+    ./obj64/mylsa path obj64 .
+
+    ./obj64/mylsa -1 path obj64
+
+*/
+
+
+
+
 /*
  * mylsa() - produce the appropriate directory listing(s)
  */
@@ -44,12 +61,27 @@ void read_path(char * path){
   struct dirent ** namelist;
   char ** list_file; 
   int i,n;
+  int isFile = 0;
   // scan the path and save to namelist
   n = scandir(path,&namelist,0,alphasort);
-  if(n<0) perror("scandir error");
+  if(n<0) {
+    DIR* directory = opendir(path);
+    if(directory!=NULL) {
+      closedir(directory);
+      return;
+    } 
+    if(errno==ENOTDIR) isFile = 1;
+    if(isFile) {
+      printf("%s\n",path);
+      return;
+    } else{
+      printf("not a file.\n");
+    }
+    return;
+  }
   else if (n==0){
     // it's a file name
-    printf("%s\t",path);
+    printf("%s\t",path);return;
   } else {
     // allocate memory for file list
     list_file = malloc(n*sizeof(char*));

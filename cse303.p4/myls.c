@@ -5,6 +5,20 @@
 #include "support.h"
 #include <dirent.h>
 #include <ctype.h>
+#include <errno.h>
+
+/**
+
+    test this one by 
+
+
+    ./obj64/myls path obj64 .
+
+    ./obj64/myls -1 path obj64
+
+*/
+
+
 
 // for print line -1
 static int line = 0;
@@ -18,32 +32,9 @@ int myCompare(const void * s1, const void *s2){
   // cast parameter to strings 
   char * str1 = *(char**)s1;
   char * str2 = *(char**)s2;
-  // calloc two strings 
-/*  char * a = (char*)calloc(strlen(str1)+1,sizeof(char));
-  char * b = (char*)calloc(strlen(str2)+1,sizeof(char));
-  char * aa = a;
-  char * bb = b;
-  // to lower case that string
-  //if(str1[0]>='A'&&str1[0]<='Z'&& str2[0]>'Z') return 0;
-  while(*str1){
-    if(*str1=='.'){
-      str1++; continue;
-    }
-    *a = tolower(*str1);// tolowercase    
-    str1++;a++; // next char
-  }
-  // lowercase second string
-  while(*str2){
-   if(*str2=='.'){
-      str2++; continue;
-    }
-    *b = tolower(*str2);// tolowercase
-    str2++;b++; // next char
-  }  
-  (*a)=(*b)=0;  */
+
   comp = strcmp(str1,str2);
-//  free(aa); // free allocated memory 
-//  free(bb);
+
   return comp;
 }
 
@@ -66,12 +57,27 @@ void read_path(char * path){
   struct dirent ** namelist;
   char ** list_file; 
   int i,n;
+  int isFile = 0;
   // scan the path and save to namelist
   n = scandir(path,&namelist,0,alphasort);
-  if(n<0) perror("scandir error");
+  if(n<0) {
+    DIR* directory = opendir(path);
+    if(directory!=NULL) {
+      closedir(directory);
+      return;
+    } 
+    if(errno==ENOTDIR) isFile = 1;
+    if(isFile) {
+      printf("%s\n",path);
+      return;
+    } else{
+      printf("not a file.\n");
+    }
+    return;
+  }
   else if (n==0){
     // it's a file name
-    printf("%s\t",path);
+    printf("%s\t",path);return;
   } else {
     // allocate memory for file list
     list_file = malloc(n*sizeof(char*));
