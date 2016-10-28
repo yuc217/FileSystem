@@ -7,15 +7,16 @@
 #include <errno.h>
 
 
-/**
+/** 
 
-    test this one by 
+    test this one  
 
 
     ./obj64/mylsa path obj64 .
 
     ./obj64/mylsa -1 path obj64
 
+    test in mac terminal 
 */
 
 

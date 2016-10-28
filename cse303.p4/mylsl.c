@@ -21,6 +21,8 @@
     ./obj64/mylsl -l path
     
 
+    test in mac terminal 
+
 */
 
 

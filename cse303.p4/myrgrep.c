@@ -10,11 +10,12 @@
 
 /**
     test this one by 
-    
+
 
     ./obj64/myrgrep test path
     
 
+    test in mac terminal 
 */
 
 /*

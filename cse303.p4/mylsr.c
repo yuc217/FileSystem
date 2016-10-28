@@ -11,9 +11,11 @@
 
 /**
     test this one by 
-    
+
 
     ./obj64/mylsr -R path
+
+    test in mac terminal 
     
 
 */

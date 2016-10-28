@@ -16,6 +16,8 @@
 
     ./obj64/myls -1 path obj64
 
+    test in mac terminal /sunlab
+
 */
 
 
