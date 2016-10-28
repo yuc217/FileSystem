@@ -16,38 +16,13 @@ static int num=0;
  * myls() - produce the appropriate directory listing(s)
  */
 int myCompare(const void * s1, const void *s2){
+  int comp = 0;
   // cast parameter to strings 
   char * str1 = *(char**)s1;
   char * str2 = *(char**)s2;
-  // calloc two strings 
-  char * a = (char*)calloc(strlen(str1)+1,sizeof(char));
-  char * b = (char*)calloc(strlen(str2)+1,sizeof(char));
-  char * aa = a;
-  char * bb = b;
-  int comp = 0;
-  // to lower case that string
-  while(*str1){
-    if(*str1=='.'){
-      str1++; continue;
-    }
-    if(*str1>='A' && *str1<='Z') *a = *str1+('a'-'A');// tolowercase
-    else *a=*str1;// lower case stay
-    str1++;a++; // next char
-  }
-  // lowercase second string
-  while(*str2){
-   if(*str2=='.'){
-      str2++; continue;
-    }
-    if(*str2>='A' && *str2<='Z') *b = *str2+('a'-'A');// tolowercase
-    else *b=*str2;// lower case stay
-    str2++;b++; // next char
-  }
 
-  (*a)=(*b)=0;
-  comp = strcmp(aa,bb);
-  free(aa); // free allocated memory 
-  free(bb);
+  comp = strcmp(str1,str2);
+
   return comp;
 }
 
@@ -101,7 +76,7 @@ void mylsa(char **roots) {
   /* TODO: Complete this function */
   struct dirent **namelist;
   // if current directory 
-  if(roots==NULL){
+  if(roots[0]==NULL){
     read_path("."); 
   } else{
     int i =0;

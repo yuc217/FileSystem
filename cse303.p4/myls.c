@@ -4,6 +4,7 @@
 #include <string.h>
 #include "support.h"
 #include <dirent.h>
+#include <ctype.h>
 
 // for print line -1
 static int line = 0;
@@ -13,22 +14,22 @@ static int num=0;
  * myls() - produce the appropriate directory listing(s)
  */
 int myCompare(const void * s1, const void *s2){
+  int comp = 0;
   // cast parameter to strings 
   char * str1 = *(char**)s1;
   char * str2 = *(char**)s2;
   // calloc two strings 
-  char * a = (char*)calloc(strlen(str1)+1,sizeof(char));
+/*  char * a = (char*)calloc(strlen(str1)+1,sizeof(char));
   char * b = (char*)calloc(strlen(str2)+1,sizeof(char));
   char * aa = a;
   char * bb = b;
-  int comp = 0;
   // to lower case that string
+  //if(str1[0]>='A'&&str1[0]<='Z'&& str2[0]>'Z') return 0;
   while(*str1){
     if(*str1=='.'){
       str1++; continue;
     }
-    if(*str1>='A' && *str1<='Z') *a = *str1+('a'-'A');// tolowercase
-    else *a=*str1;// lower case stay
+    *a = tolower(*str1);// tolowercase    
     str1++;a++; // next char
   }
   // lowercase second string
@@ -36,15 +37,13 @@ int myCompare(const void * s1, const void *s2){
    if(*str2=='.'){
       str2++; continue;
     }
-    if(*str2>='A' && *str2<='Z') *b = *str2+('a'-'A');// tolowercase
-    else *b=*str2;// lower case stay
+    *b = tolower(*str2);// tolowercase
     str2++;b++; // next char
-  }
-
-  (*a)=(*b)=0;
-  comp = strcmp(aa,bb);
-  free(aa); // free allocated memory 
-  free(bb);
+  }  
+  (*a)=(*b)=0;  */
+  comp = strcmp(str1,str2);
+//  free(aa); // free allocated memory 
+//  free(bb);
   return comp;
 }
 
@@ -78,7 +77,7 @@ void read_path(char * path){
     list_file = malloc(n*sizeof(char*));
     for(i=0;i<n;i++){
       // save to list-file
-      list_file[i]=malloc(strlen(namelist[i]->d_name+1));
+      list_file[i]=malloc(strlen(namelist[i]->d_name)+1);
       strcpy(list_file[i],namelist[i]->d_name);
       //printf("%s\n",list_file[i]);
       free(namelist[i]);
@@ -100,7 +99,9 @@ void myls(char **roots) {
   /* TODO: Complete this function */
   struct dirent **namelist;
   // if current directory 
-  if(roots==NULL){
+  //if(roots[0]==NULL) printf("NULL path\n");
+  //printf("current path:%s\n",roots[0]);
+  if(roots[0]==NULL){
     read_path("."); 
   } else{
     int i =0;
@@ -108,8 +109,7 @@ void myls(char **roots) {
       //printf("%i:%s\n",i,roots[i]);
       read_path(roots[i]);
     }
-  }
-  
+  }  
 }
 
 
