@@ -11,15 +11,15 @@
  */
 void mylsr(char **roots) {
     /* TODO: Complete this function */
-  struct dirent **namelist;
+  struct dirent **namelist;  
   if(roots[0]==NULL){
+    //struct dirent **namelist;
     int i,n;
     n = scandir(".",&namelist,0,alphasort);
     if(n<0) perror("scandir error");
     else {
-      for(i=0;i<n;i++){ // print everything first 
+      for(i=0;i<n;i++) // print everything first 
 	printf("%s\n",namelist[i]->d_name);
-      }
       for(i=0;i<n;i++){ // find subdirectory and hard link
 	char * dirname = namelist[i]->d_name;
 	if(namelist[i]->d_type == DT_DIR){
@@ -33,7 +33,7 @@ void mylsr(char **roots) {
 	    // hard link
 	    printf("hard link\n");
 	  } else {
-	    char ** root = malloc(sizeof(char *));
+	    char ** root = malloc(2*sizeof(char *));
 	    root[0]= malloc(strlen(dirname));
 	    strcpy(root[0],dirname);
 	    mylsr(root);
@@ -42,22 +42,23 @@ void mylsr(char **roots) {
 	  }
 	}
 	free(namelist[i]);
-      }
-      free(namelist);
+      }      
     }
+    
   }
   else{
-    int i=0;
-    while(roots[i]){
-      int c,n;
+    int i,n,j=0;
+    //    struct dirent **namelist;
+    while(roots[i]){      
+      //struct dirent **namelist;
       n = scandir(roots[i],&namelist,0,alphasort);
       if(n<0) printf("%s\n",roots[i]);
       else if(n==0) printf("wrong path");
       else{
-	for(int j=0;j<n;j++){
+	for(j=0;j<n;j++){
 	  printf("%s\n",namelist[j]->d_name);
 	}
-	for(int j=0;j<n;j++){
+	for(j=0;j<n;j++){
 	  char *dirname = namelist[j]->d_name;
 	  if(namelist[j]->d_type == DT_DIR){
 	    struct stat fileStat;
@@ -68,23 +69,22 @@ void mylsr(char **roots) {
 	    if(fileStat.st_nlink>2){
 	      printf("hardlink\n"); // ignore
 	    } else {
-	      char ** root = malloc(sizeof(char *));
+	      char ** root = malloc(2*sizeof(char *));
 	      root[0] = malloc(strlen(dirname));
 	      strcpy(root[0],dirname);
 	      mylsr(root);
 	      free(root[0]);
 	      free(root);
 	    }
-	  }
+	  }	 
 	  free(namelist[j]);
-	 
 	}
-	free(namelist);
       }
       i++;
+      // if(n>0) free(namelist);
     }
   }
-  
+  free(namelist);
 }
 
 /*
